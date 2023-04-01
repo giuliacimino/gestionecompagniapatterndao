@@ -50,7 +50,6 @@ public class Compagnia {
 		this.dataFondazione = dataFondazione;
 	}
 
-	@Override
 	public String toString() {
 		String dataFondazioneString = dataFondazione != null ? DateTimeFormatter.ofPattern("dd/MM/yyyy").format(dataFondazione)
 				: " N.D.";
