@@ -161,9 +161,52 @@ public class ImpiegatoDAOImpl extends AbstractMySQLDAO implements ImpiegatoDAO {
 		return result;
 	}
 
+	
+	//findByExample
 	public List<Impiegato> findByExample(Impiegato input) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		if (isNotActive())
+			throw new Exception("Connessione non attiva. Impossibile effettuare operazioni DAO.");
+		if (input == null)
+			throw new RuntimeException("Impossibile caricare Compagnia: id mancante!");
+
+		List<Impiegato> result=new ArrayList<Impiegato>();
+		Impiegato impiegatoTemp= null;
+		
+		String query= "select * from impiegato where  id is not null";
+		if (input.getNome()!= null && ! input.getNome().isEmpty()) {
+			query+="and nome like ' "+ input.getNome()+ " %' ";
+		}
+		if (input.getCognome()!= null && ! input.getCognome().isEmpty()) {
+			query+="and cognome like ' " +input.getCognome()+ " %'";
+		}
+		if(input.getCodiceFiscale()!= null && !input.getCodiceFiscale().isEmpty()) {
+			query+="and codicefiscale = ' "+ input.getCodiceFiscale()+ " %' ";
+		}
+		if (input.getDataNascita()!= null) {
+			query+= "and datanascita =" + input.getDataNascita()+ " '";
+		}
+		if( input.getDataAssunzione()!= null) {
+			query+="and dataassunzione ="+input.getDataAssunzione()+ " ' ";
+		}
+		try (Statement ps = connection.createStatement()) {
+			ResultSet rs = ps.executeQuery(query);
+
+			while (rs.next()) {
+				impiegatoTemp = new Impiegato();
+				impiegatoTemp.setNome(rs.getString("nome"));
+				impiegatoTemp.setCognome(rs.getString("cognome"));
+				impiegatoTemp.setCodiceFiscale(rs.getString("codicefiscale"));
+				impiegatoTemp.setDataNascita(
+						rs.getDate("datanascita") != null ? rs.getDate("datanascita").toLocalDate() : null);
+				impiegatoTemp.setDataAssunzione(rs.getDate("dataassunzione")!= null? rs.getDate("dataassunzione").toLocalDate(): null);
+				impiegatoTemp.setId(rs.getLong("id"));
+				result.add(impiegatoTemp);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
+		return result;
 	}
 
 	public List<Impiegato> findAllByCompagnia(Compagnia compagniaInput) throws Exception {

@@ -13,6 +13,11 @@ public class Compagnia {
 		
 	}
 	
+	public Compagnia(String ragioneSociale, int fatturatoAnnuo) {
+		this.ragioneSociale=ragioneSociale;
+		this.fatturatoAnnuo=fatturatoAnnuo;
+	}
+	
 	public Compagnia (String ragioneSociale, int fatturatoAnnuo, LocalDate dataFondazione) {
 		this.ragioneSociale=ragioneSociale;
 		this.fatturatoAnnuo=fatturatoAnnuo;

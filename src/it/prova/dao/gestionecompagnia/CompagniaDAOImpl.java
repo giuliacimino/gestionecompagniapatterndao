@@ -12,6 +12,8 @@ import it.prova.dao.AbstractMySQLDAO;
 import it.prova.model.Compagnia;
 import it.prova.model.Impiegato;
 
+
+
 public class CompagniaDAOImpl extends AbstractMySQLDAO implements CompagniaDAO {
 
 	// iniezione della conessione
@@ -147,12 +149,46 @@ public class CompagniaDAOImpl extends AbstractMySQLDAO implements CompagniaDAO {
 		return result;
 	}
 	
-	//find by example
+	//findByExample
 
 	public List<Compagnia> findByExample(Compagnia input) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		if (isNotActive())
+			throw new Exception("Connessione non attiva. Impossibile effettuare operazioni DAO.");
+		if (input == null)
+			throw new RuntimeException("Impossibile caricare Compagnia: id mancante!");
+
+		List<Compagnia> result=new ArrayList<Compagnia>();
+		Compagnia compagniaTemp= null;
+		
+		String query= "select * from compagnia where  id is not null";
+		if (input.getRagioneSociale()!= null && ! input.getRagioneSociale().isEmpty()) {
+			query+="and ragionesociale like ' "+ input.getRagioneSociale() + " %' ";
+		}
+		if (input.getFatturatoAnnuo()!= 0) {
+			query+="and fatturatoannuo > ' " +input.getFatturatoAnnuo() + " ' ";
+		}
+		if(input.getDataFondazione()!= null) {
+			query+="and datafondazione = ' "+ input.getDataFondazione()+ " ' ";
+		}
+		try (Statement ps = connection.createStatement()) {
+			ResultSet rs = ps.executeQuery(query);
+
+			while (rs.next()) {
+				compagniaTemp = new Compagnia();
+				compagniaTemp.setRagioneSociale(rs.getString("ragionesociale"));
+				compagniaTemp.setFatturatoAnnuo(rs.getInt("fatturatoannuo"));
+				compagniaTemp.setDataFondazione(
+						rs.getDate("datafondazione") != null ? rs.getDate("datafondazione").toLocalDate() : null);
+				compagniaTemp.setId(rs.getLong("id"));
+				result.add(compagniaTemp);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
+		return result;
 	}
+
 
 	public List<Compagnia> findAllByDataAssunzioneMaggioreDi(LocalDate dataAssunzione) throws Exception {
 		if (isNotActive())
@@ -164,7 +200,7 @@ public class CompagniaDAOImpl extends AbstractMySQLDAO implements CompagniaDAO {
 		ArrayList<Compagnia> result = new ArrayList<Compagnia>();
 
 		try (PreparedStatement ps = connection.prepareStatement(
-				"select * from compagnia c inner join impiegato i on c.id=i.id_compagnia where dataassunzione > ? ;")) {
+				"select distinct * from compagnia c inner join impiegato i on c.id=i.id_compagnia where dataassunzione > ? ;")) {
 			ps.setDate(1, java.sql.Date.valueOf(dataAssunzione));
 
 			try (ResultSet rs = ps.executeQuery();) {
