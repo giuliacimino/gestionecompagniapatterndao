@@ -19,7 +19,6 @@ public class CompagniaDAOImpl extends AbstractMySQLDAO implements CompagniaDAO{
 	}
 
 	public List<Compagnia> list() throws Exception {
-		// prima di tutto cerchiamo di capire se possiamo effettuare le operazioni
 		if (isNotActive())
 			throw new Exception("Connessione non attiva. Impossibile effettuare operazioni DAO.");
 
