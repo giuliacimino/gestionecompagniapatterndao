@@ -10,7 +10,6 @@ import it.prova.dao.gestionecompagnia.CompagniaDAO;
 import it.prova.dao.gestionecompagnia.CompagniaDAOImpl;
 import it.prova.dao.gestionecompagnia.ImpiegatoDAO;
 import it.prova.dao.gestionecompagnia.ImpiegatoDAOImpl;
-import it.prova.dao.gestionecompagnia.CompagniaDAO;
 import it.prova.model.Compagnia;
 import it.prova.model.Impiegato;
 
@@ -48,8 +47,15 @@ public class TestGestioneCompagnia {
 			System.out.println("in tabella sono presenti "+ impiegatoDAOInstance.list().size()+ " elementi.");
 			
 			
-			testFindAllByDataAssunzioneMaggioreDi(compagniaDAOInstance, impiegatoDAOInstance);
-			System.out.println("in tabella sono presenti "+ compagniaDAOInstance.list().size()+ " elementi.");
+			testFindAllByDataAssunzioneMaggioreDi(compagniaDAOInstance,impiegatoDAOInstance);
+			System.out.println("In tabella compagnia ci sono "+compagniaDAOInstance.list().size()+" elementi.");
+
+			
+			testFindAllByRagioneSocialeContiene(compagniaDAOInstance);
+			System.out.println("in tabella sono presenti "+ compagniaDAOInstance.list().size()+" elementi.");
+			
+			testFindAllByCodFisImpiegatoContiene(compagniaDAOInstance, impiegatoDAOInstance);
+			System.out.println("in tabella sono presenti" + compagniaDAOInstance.list().size()+ " elementi.");
 			
 
 
@@ -161,6 +167,8 @@ public class TestGestioneCompagnia {
 	
 	
 	//definizione metodi Compagnia
+	
+	//testFindAllByDataAssunzioneMaggioreDi
 	public static void testFindAllByDataAssunzioneMaggioreDi (CompagniaDAO compagniaDAOInstance, ImpiegatoDAO impiegatoDAOInstance)throws Exception {
 		System.out.println(".......testFindAllByDataAssunzioneMaggioreDi inizio......");
 		List<Compagnia> elencoCompagniePresenti = compagniaDAOInstance.list();
@@ -177,5 +185,41 @@ public class TestGestioneCompagnia {
 		}
 		System.out.println(".......testFindAllByDataAssunzioneMaggioreDi fine: PASSED.............");
 	}
+
 	
-}
+	//testFindAllByRagioneSocialeContiene
+	private static void testFindAllByRagioneSocialeContiene (CompagniaDAO compagniaDAOInstance) throws Exception {
+		System.out.println("......testFindAllByRagioneSocialeContiene inizio......");
+		List<Compagnia> compagnieEsistenti= compagniaDAOInstance.list();
+		String parteNomeRagioneSociale= "a";
+		List<Compagnia> result=compagniaDAOInstance.findAllByRagioneSocialeContiene(parteNomeRagioneSociale);
+		System.out.println(result);
+		System.out.println("......testFindAllByRagioneSocialeContiene fine......");
+
+		
+	}
+	
+	
+	//testFindAllByCodFisImpiegatoContiene
+	private static void testFindAllByCodFisImpiegatoContiene (CompagniaDAO compagniaDAOInstance, ImpiegatoDAO impiegatoDAOInstance) throws Exception{
+		System.out.println(".......testFindAllByCodFisImpiegatoContiene inizio......");
+		List<Compagnia> elencoCompagniePresenti = compagniaDAOInstance.list();
+		if (elencoCompagniePresenti.size() < 1)
+			throw new RuntimeException("testFindAllByCodFisImpiegatoContiene : FAILED, non ci sono compagnia sul DB");
+		List<Impiegato> elencoImpiegatiPresenti = impiegatoDAOInstance.list();
+		if (elencoImpiegatiPresenti.size() < 1)
+			throw new RuntimeException("testFindAllByCodFisImpiegatoContiene : FAILED, non ci sono impiegati sul DB");
+
+		String codFisDaCercare = "h501";
+		List<Compagnia> listaCompagniaLikeExample = compagniaDAOInstance.findAllBYCodFisImpiegatoContiene(codFisDaCercare);
+		if (listaCompagniaLikeExample.size() < 1) {
+			throw new RuntimeException("testFindAllByCodFisImpiegatoContiene : FAILED, non ci sono voci sul DB");
+		}
+		System.out.println("Gli elementi della lista sono: " + listaCompagniaLikeExample.size());
+		System.out.println(listaCompagniaLikeExample);
+		System.out.println(".......testFindAllByCodFisImpiegatoContiene fine: PASSED.............");
+	}
+
+
+	}
+	

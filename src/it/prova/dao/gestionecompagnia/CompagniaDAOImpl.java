@@ -12,9 +12,9 @@ import it.prova.dao.AbstractMySQLDAO;
 import it.prova.model.Compagnia;
 import it.prova.model.Impiegato;
 
-public class CompagniaDAOImpl extends AbstractMySQLDAO implements CompagniaDAO{
-	
-	//iniezione della conessione
+public class CompagniaDAOImpl extends AbstractMySQLDAO implements CompagniaDAO {
+
+	// iniezione della conessione
 	public CompagniaDAOImpl(Connection connection) {
 		super(connection);
 	}
@@ -22,11 +22,8 @@ public class CompagniaDAOImpl extends AbstractMySQLDAO implements CompagniaDAO{
 	public List<Compagnia> list() throws Exception {
 		if (isNotActive())
 			throw new Exception("Connessione non attiva. Impossibile effettuare operazioni DAO.");
-
 		ArrayList<Compagnia> result = new ArrayList<Compagnia>();
-
 		try (Statement ps = connection.createStatement(); ResultSet rs = ps.executeQuery("select * from compagnia")) {
-
 			while (rs.next()) {
 				Compagnia compagniaTemp = new Compagnia();
 				compagniaTemp.setRagioneSociale(rs.getString("ragionesociale"));
@@ -36,20 +33,18 @@ public class CompagniaDAOImpl extends AbstractMySQLDAO implements CompagniaDAO{
 				compagniaTemp.setId(rs.getLong("id"));
 				result.add(compagniaTemp);
 			}
-
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw e;
 		}
 		return result;
 	}
-	
-	//INIZIO DEL CRUD
-	
-	
-	//definizione metodo get
+
+	// INIZIO DEL CRUD
+
+	// definizione metodo get
 	public Compagnia get(Long idInput) throws Exception {
-		//verifica della disponibilità della connessione
+		// verifica della disponibilità della connessione
 		if (isNotActive())
 			throw new Exception("Connessione non attiva. Impossibile effettuare operazioni DAO.");
 
@@ -71,7 +66,7 @@ public class CompagniaDAOImpl extends AbstractMySQLDAO implements CompagniaDAO{
 				} else {
 					result = null;
 				}
-			} 
+			}
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -79,12 +74,12 @@ public class CompagniaDAOImpl extends AbstractMySQLDAO implements CompagniaDAO{
 		}
 		return result;
 	}
-	
-	//definizione metodo update
+
+	// definizione metodo update
 
 	public int update(Compagnia input) throws Exception {
-		
-		//verifica della connessione
+
+		// verifica della connessione
 		if (isNotActive())
 			throw new Exception("Connessione non attiva. Impossibile effettuare operazioni DAO.");
 
@@ -106,54 +101,51 @@ public class CompagniaDAOImpl extends AbstractMySQLDAO implements CompagniaDAO{
 		return result;
 	}
 
-	
-	//definizione metodo insert
-	
+	// definizione metodo insert
+
 	public int insert(Compagnia input) throws Exception {
 		// verifica della connessione
-				if (isNotActive())
-					throw new Exception("Connessione non attiva. Impossibile effettuare operazioni DAO.");
+		if (isNotActive())
+			throw new Exception("Connessione non attiva. Impossibile effettuare operazioni DAO.");
 
-				if (input == null)
-					throw new Exception("Valore di input non ammesso.");
+		if (input == null)
+			throw new Exception("Valore di input non ammesso.");
 
-				int result = 0;
-				try (PreparedStatement ps = connection.prepareStatement(
-						"INSERT INTO compagnia (ragionesociale, fatturatoannuo, datafondazione) VALUES (?, ?, ?);")) {
-					ps.setString(1, input.getRagioneSociale());
-					ps.setInt(2, input.getFatturatoAnnuo());
-					// quando si fa il setDate serve un tipo java.sql.Date
-					ps.setDate(3, java.sql.Date.valueOf(input.getDataFondazione()));
-					result = ps.executeUpdate();
-				} catch (Exception e) {
-					e.printStackTrace();
-					throw e;
-				}
-				return result;
+		int result = 0;
+		try (PreparedStatement ps = connection.prepareStatement(
+				"INSERT INTO compagnia (ragionesociale, fatturatoannuo, datafondazione) VALUES (?, ?, ?);")) {
+			ps.setString(1, input.getRagioneSociale());
+			ps.setInt(2, input.getFatturatoAnnuo());
+			// quando si fa il setDate serve un tipo java.sql.Date
+			ps.setDate(3, java.sql.Date.valueOf(input.getDataFondazione()));
+			result = ps.executeUpdate();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
+		return result;
 	}
 
-	
-	//definizione metodo delete
-	
+	// definizione metodo delete
+
 	public int delete(Compagnia input) throws Exception {
 		// verifica della connessione
-				if (isNotActive())
-					throw new Exception("Connessione non attiva. Impossibile effettuare operazioni DAO.");
+		if (isNotActive())
+			throw new Exception("Connessione non attiva. Impossibile effettuare operazioni DAO.");
 
-				if (input == null || input.getId() == null || input.getId() < 1)
-					throw new Exception("Valore di input non ammesso.");
+		if (input == null || input.getId() == null || input.getId() < 1)
+			throw new Exception("Valore di input non ammesso.");
 
-				int result = 0;
-				try (PreparedStatement ps = connection.prepareStatement("DELETE FROM compagnia WHERE ID=?")) {
-					ps.setLong(1, input.getId());
-					result = ps.executeUpdate();
-				} catch (Exception e) {
-					e.printStackTrace();
-					throw e;
-				}
-				return result;
+		int result = 0;
+		try (PreparedStatement ps = connection.prepareStatement("DELETE FROM compagnia WHERE ID=?")) {
+			ps.setLong(1, input.getId());
+			result = ps.executeUpdate();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
+		return result;
 	}
-	
 
 	public List<Compagnia> findByExample(Compagnia input) throws Exception {
 		// TODO Auto-generated method stub
@@ -204,22 +196,72 @@ public class CompagniaDAOImpl extends AbstractMySQLDAO implements CompagniaDAO{
 	}
 
 	public List<Compagnia> findAllByRagioneSocialeContiene(String ragioneSocialeInput) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		if (isNotActive())
+			throw new Exception("Connessione non attiva. Impossibile effettuare operazioni DAO.");
+
+		if (ragioneSocialeInput == null) {
+			throw new Exception("errore: non è stato inserito alcuna ragione sociale!");
+		}
+		List<Compagnia> elencoCompagnieConRagioneSocialeInput = new ArrayList<Compagnia>();
+
+		try (PreparedStatement ps = connection
+				.prepareStatement("select * from compagnia c where c.ragionesociale like ?");) {
+
+			ps.setString(1, '%' + ragioneSocialeInput + '%');
+			try (ResultSet rs = ps.executeQuery()) {
+				;
+
+				while (rs.next()) {
+					Compagnia temp = new Compagnia();
+					temp.setId(rs.getLong("id"));
+					temp.setRagioneSociale(rs.getString("ragionesociale"));
+					temp.setFatturatoAnnuo(rs.getInt("fatturatoannuo"));
+					temp.setDataFondazione(
+							rs.getDate("datafondazione") != null ? rs.getDate("datafondazione").toLocalDate() : null);
+					elencoCompagnieConRagioneSocialeInput.add(temp);
+
+				}
+			}
+
+		} catch (Exception e) {
+
+			e.printStackTrace();
+
+		}
+		return elencoCompagnieConRagioneSocialeInput;
 	}
 
 	public List<Compagnia> findAllBYCodFisImpiegatoContiene(String codiceFiscaleInput) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		if (isNotActive())
+			throw new Exception("Connessione non attiva. Impossibile effettuare operazioni DAO.");
+		if (codiceFiscaleInput == null || codiceFiscaleInput.isBlank())
+			throw new Exception("Valore di input non ammesso.");
+		List<Compagnia> result = new ArrayList<>();
+		try (PreparedStatement ps = connection
+				.prepareStatement("select distinct c.id,ragionesociale,fatturatoannuo,datafondazione from compagnia c "
+						+ "inner join impiegato i on c.id=i.id_compagnia where i.codicefiscale like ?;")) {
+
+			ps.setString(1, '%' + codiceFiscaleInput + '%');
+
+			try (ResultSet rs = ps.executeQuery()) {
+
+				while (rs.next()) {
+					Compagnia compagniaTemp = new Compagnia();
+					compagniaTemp.setRagioneSociale(rs.getString("ragionesociale"));
+					compagniaTemp.setFatturatoAnnuo(rs.getInt("fatturatoannuo"));
+					compagniaTemp.setDataFondazione(
+							rs.getDate("datafondazione") != null ? rs.getDate("datafondazione").toLocalDate() : null);
+					compagniaTemp.setId(rs.getLong("c.ID"));
+					result.add(compagniaTemp);
+				}
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
+
+		return result;
 	}
-	
-	
-	//definizione metodo insert 
-
-
-	
-	
-	
-
 
 }
