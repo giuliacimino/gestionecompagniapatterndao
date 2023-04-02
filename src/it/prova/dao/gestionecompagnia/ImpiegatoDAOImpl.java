@@ -174,8 +174,40 @@ public class ImpiegatoDAOImpl extends AbstractMySQLDAO implements ImpiegatoDAO{
 	}
 
 	public List<Impiegato> findAllByCompagnia(Compagnia compagniaInput) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		if (isNotActive())
+			throw new Exception("Connessione non attiva. Impossibile effettuare operazioni DAO.");
+		if (compagniaInput == null) {
+			throw new Exception("errore: non è stato inserito alcuna compagnia!");
+		}
+		List<Impiegato> elencoImpiegatiDellaCompagnia = new ArrayList<Impiegato>();
+
+		try (PreparedStatement ps = connection
+				.prepareStatement("select * from impiegato i inner join compagnia c on i.id_compagnia=c.id where c.id like ?");) {
+
+			ps.setLong(1, compagniaInput.getId());
+			try (ResultSet rs = ps.executeQuery()) {
+
+				while (rs.next()) {
+					Impiegato temp = new Impiegato();
+					temp.setId(rs.getLong("id"));
+					temp.setNome(rs.getString("nome"));
+					temp.setCognome(rs.getString("cognome"));
+					temp.setCodiceFiscale(rs.getString("codicefiscale"));
+					temp.setDataNascita(
+							rs.getDate("datanascita") != null ? rs.getDate("datanascita").toLocalDate() : null);
+					temp.setDataAssunzione(
+							rs.getDate("dataassunzione") != null ? rs.getDate("dataassunzione").toLocalDate() : null);
+					elencoImpiegatiDellaCompagnia.add(temp);
+
+				}
+			}
+
+		} catch (Exception e) {
+
+			e.printStackTrace();
+
+		}
+		return elencoImpiegatiDellaCompagnia;
 	}
 
 	public int countByDataFondazioneCompagniaGreaterThan(LocalDate dataFondazione) throws Exception {

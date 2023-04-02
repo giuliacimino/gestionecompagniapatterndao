@@ -57,6 +57,9 @@ public class TestGestioneCompagnia {
 			testFindAllByCodFisImpiegatoContiene(compagniaDAOInstance, impiegatoDAOInstance);
 			System.out.println("in tabella sono presenti" + compagniaDAOInstance.list().size()+ " elementi.");
 			
+			
+			testFindAllByCompagnia(compagniaDAOInstance, impiegatoDAOInstance);
+			System.out.println("in tabella sono presenti" + impiegatoDAOInstance.list().size()+ " elementi.");
 
 
 		} catch (Exception e) {
@@ -218,6 +221,29 @@ public class TestGestioneCompagnia {
 		System.out.println("Gli elementi della lista sono: " + listaCompagniaLikeExample.size());
 		System.out.println(listaCompagniaLikeExample);
 		System.out.println(".......testFindAllByCodFisImpiegatoContiene fine: PASSED.............");
+	}
+	
+	
+	//testFindAllByCompagnia
+	public static void testFindAllByCompagnia(CompagniaDAO compagniaDAOInstance, ImpiegatoDAO impiegatoDAOInstance) throws Exception {
+		System.out.println("......testFindAllByCompagnia inizio.........");
+		List<Compagnia> elencoCompagnie=compagniaDAOInstance.list();
+		if(elencoCompagnie.size()<1) {
+			throw new RuntimeException("errore: non sono presenti compagnie sul db.");
+		}
+		List<Impiegato> elencoImpiegati= impiegatoDAOInstance.list();
+		if (elencoImpiegati.size()<1) {
+			throw new RuntimeException ("errore: non sono presenti impiegati sul db.");
+		}
+		Compagnia compagnieDaRicercare= elencoCompagnie.get(0);
+		List<Impiegato> impiegatiDellaCompagnia= impiegatoDAOInstance.findAllByCompagnia(compagnieDaRicercare);
+		if (impiegatiDellaCompagnia.size()<1) {
+			throw new RuntimeException("non è stato trovato nulla");
+		}
+		System.out.println("gli elementi che corrispondono sono "+impiegatiDellaCompagnia.size() );
+		System.out.println(impiegatiDellaCompagnia);
+		System.out.println("..........testFindAllByCompagnia fine......");
+		
 	}
 
 

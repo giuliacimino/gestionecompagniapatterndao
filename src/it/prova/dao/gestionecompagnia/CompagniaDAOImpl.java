@@ -146,6 +146,8 @@ public class CompagniaDAOImpl extends AbstractMySQLDAO implements CompagniaDAO {
 		}
 		return result;
 	}
+	
+	//find by example
 
 	public List<Compagnia> findByExample(Compagnia input) throws Exception {
 		// TODO Auto-generated method stub
