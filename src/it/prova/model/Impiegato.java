@@ -10,6 +10,7 @@ public class Impiegato {
 	private String codiceFiscale;
 	private LocalDate dataNascita;
 	private LocalDate dataAssunzione;
+	private Compagnia compagnia;
 	
 	
 	public Impiegato() {
@@ -35,6 +36,15 @@ public class Impiegato {
 		this.dataAssunzione=dataAssunzione;
 	}
 
+	
+	public Impiegato (String nome, String cognome, String codiceFiscale, LocalDate dataNascita, LocalDate DataAssunzione, Compagnia compagnia) {
+		this.nome=nome;
+		this.cognome=cognome;
+		this.codiceFiscale=codiceFiscale;
+		this.dataNascita=dataNascita;
+		this.dataAssunzione=dataAssunzione;
+		this.compagnia=compagnia;
+	}
 	public Long getId() {
 		return id;
 	}
@@ -81,6 +91,16 @@ public class Impiegato {
 
 	public void setDataAssunzione(LocalDate dataAssunzione) {
 		this.dataAssunzione = dataAssunzione;
+	}
+	
+	
+
+	public Compagnia getCompagnia() {
+		return compagnia;
+	}
+
+	public void setCompagnia(Compagnia compagnia) {
+		this.compagnia = compagnia;
 	}
 
 	public String toString() {

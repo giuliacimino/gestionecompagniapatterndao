@@ -10,6 +10,7 @@ import java.util.List;
 
 import it.prova.dao.AbstractMySQLDAO;
 import it.prova.model.Compagnia;
+import it.prova.model.Impiegato;
 
 public class CompagniaDAOImpl extends AbstractMySQLDAO implements CompagniaDAO{
 	
@@ -159,9 +160,47 @@ public class CompagniaDAOImpl extends AbstractMySQLDAO implements CompagniaDAO{
 		return null;
 	}
 
-	public List<Compagnia> findAllByDataAssunzioneMaggioreDi(LocalDate dataFondazione) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+	public List<Compagnia> findAllByDataAssunzioneMaggioreDi(LocalDate dataAssunzione) throws Exception {
+		if (isNotActive())
+			throw new Exception("Connessione non attiva. Impossibile effettuare operazioni DAO.");
+
+		if (dataAssunzione == null)
+			throw new Exception("Valore di input non ammesso.");
+
+		ArrayList<Compagnia> result = new ArrayList<Compagnia>();
+
+		try (PreparedStatement ps = connection.prepareStatement(
+				"select * from compagnia c inner join impiegato i on c.id=i.id_compagnia where dataassunzione > ? ;")) {
+			ps.setDate(1, java.sql.Date.valueOf(dataAssunzione));
+
+			try (ResultSet rs = ps.executeQuery();) {
+				while (rs.next()) {
+					Compagnia compagniaTemp = new Compagnia();
+					compagniaTemp.setRagioneSociale(rs.getString("ragionesociale"));
+					compagniaTemp.setFatturatoAnnuo(rs.getInt("fatturatoannuo"));
+					compagniaTemp.setDataFondazione(
+							rs.getDate("datafondazione") != null ? rs.getDate("datafondazione").toLocalDate() : null);
+					compagniaTemp.setId(rs.getLong("id"));
+
+					Impiegato impiegatoTemp = new Impiegato();
+					impiegatoTemp.setId(rs.getLong("id"));
+					impiegatoTemp.setNome(rs.getString("nome"));
+					impiegatoTemp.setCognome(rs.getString("cognome"));
+					impiegatoTemp.setCodiceFiscale(rs.getString("codicefiscale"));
+					impiegatoTemp.setDataNascita(
+							rs.getDate("datanascita") != null ? rs.getDate("datanascita").toLocalDate() : null);
+					impiegatoTemp.setDataAssunzione(
+							rs.getDate("dataassunzione") != null ? rs.getDate("dataassunzione").toLocalDate() : null);
+
+					result.add(compagniaTemp);
+				}
+
+			} catch (Exception e) {
+				e.printStackTrace();
+				throw e;
+			}
+			return result;
+		}
 	}
 
 	public List<Compagnia> findAllByRagioneSocialeContiene(String ragioneSocialeInput) throws Exception {

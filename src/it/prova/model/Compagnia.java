@@ -7,6 +7,7 @@ public class Compagnia {
 	private String ragioneSociale;
 	private int fatturatoAnnuo;
 	private LocalDate dataFondazione;
+	private Impiegato impiegati;
 	
 	public Compagnia () {
 		
@@ -16,6 +17,13 @@ public class Compagnia {
 		this.ragioneSociale=ragioneSociale;
 		this.fatturatoAnnuo=fatturatoAnnuo;
 		this.dataFondazione=dataFondazione;
+	}
+	
+	public Compagnia (String ragioneSociale, int fatturatoAnnuo, LocalDate dataFondazione, Impiegato impiegati) {
+		this.ragioneSociale=ragioneSociale;
+		this.fatturatoAnnuo=fatturatoAnnuo;
+		this.dataFondazione=dataFondazione;
+		this.impiegati=impiegati;
 	}
 
 	public Long getId() {
@@ -48,6 +56,15 @@ public class Compagnia {
 
 	public void setDataFondazione(LocalDate dataFondazione) {
 		this.dataFondazione = dataFondazione;
+	}
+	
+
+	public Impiegato getImpiegati() {
+		return impiegati;
+	}
+
+	public void setImpiegati(Impiegato impiegati) {
+		this.impiegati = impiegati;
 	}
 
 	public String toString() {

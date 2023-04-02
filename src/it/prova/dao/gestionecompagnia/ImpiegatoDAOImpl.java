@@ -21,13 +21,13 @@ public class ImpiegatoDAOImpl extends AbstractMySQLDAO implements ImpiegatoDAO{
 
 
 	public List<Impiegato> list() throws Exception {
+		// controllo per connessione attiva
 		if (isNotActive())
 			throw new Exception("Connessione non attiva. Impossibile effettuare operazioni DAO.");
-
-		ArrayList<Impiegato> result = new ArrayList<Impiegato>();
-
-		try (Statement ps = connection.createStatement(); ResultSet rs = ps.executeQuery("select * from impiegato")) {
-
+		List<Impiegato> result = new ArrayList<>();
+		try (Statement ps = connection.createStatement();
+				ResultSet rs = ps
+						.executeQuery("select * from impiegato i inner join compagnia c on c.id=i.id_compagnia;")) {
 			while (rs.next()) {
 				Impiegato impiegatoTemp = new Impiegato();
 				impiegatoTemp.setNome(rs.getString("nome"));
@@ -35,8 +35,16 @@ public class ImpiegatoDAOImpl extends AbstractMySQLDAO implements ImpiegatoDAO{
 				impiegatoTemp.setCodiceFiscale(rs.getString("codicefiscale"));
 				impiegatoTemp.setDataNascita(
 						rs.getDate("datanascita") != null ? rs.getDate("datanascita").toLocalDate() : null);
-				impiegatoTemp.setDataAssunzione(rs.getDate("dataassunzione")!= null? rs.getDate("dataassunzione").toLocalDate():null);
-				impiegatoTemp.setId(rs.getLong("id"));
+				impiegatoTemp.setDataAssunzione(
+						rs.getDate("dataassunzione") != null ? rs.getDate("dataassunzione").toLocalDate() : null);
+				impiegatoTemp.setId(rs.getLong("i.ID"));
+				Compagnia compagniaTemp = new Compagnia();
+				compagniaTemp.setRagioneSociale(rs.getString("ragionesociale"));
+				compagniaTemp.setFatturatoAnnuo(rs.getInt("fatturatoannuo"));
+				compagniaTemp.setDataFondazione(
+						rs.getDate("datafondazione") != null ? rs.getDate("datafondazione").toLocalDate() : null);
+				compagniaTemp.setId(rs.getLong("c.ID"));
+				impiegatoTemp.setCompagnia(compagniaTemp);
 				result.add(impiegatoTemp);
 			}
 

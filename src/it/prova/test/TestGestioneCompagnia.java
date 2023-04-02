@@ -47,6 +47,10 @@ public class TestGestioneCompagnia {
 			testDeleteImpiegato(impiegatoDAOInstance);
 			System.out.println("in tabella sono presenti "+ impiegatoDAOInstance.list().size()+ " elementi.");
 			
+			
+			testFindAllByDataAssunzioneMaggioreDi(compagniaDAOInstance, impiegatoDAOInstance);
+			System.out.println("in tabella sono presenti "+ compagniaDAOInstance.list().size()+ " elementi.");
+			
 
 
 		} catch (Exception e) {
@@ -151,6 +155,27 @@ public class TestGestioneCompagnia {
 			throw new RuntimeException("testDeleteImpiegato : FAILED, la rimozione non è avvenuta");
 
 		System.out.println(".......testDeleteImpiegato fine: PASSED.............");
+	}
+	
+	
+	
+	
+	//definizione metodi Compagnia
+	public static void testFindAllByDataAssunzioneMaggioreDi (CompagniaDAO compagniaDAOInstance, ImpiegatoDAO impiegatoDAOInstance)throws Exception {
+		System.out.println(".......testFindAllByDataAssunzioneMaggioreDi inizio......");
+		List<Compagnia> elencoCompagniePresenti = compagniaDAOInstance.list();
+		if (elencoCompagniePresenti.size() < 1)
+			throw new RuntimeException("testFindAllByDataAssunzioneMaggioreDi : FAILED, non ci sono compagnia sul DB");
+		List<Impiegato> elencoImpiegatiPresenti = impiegatoDAOInstance.list();
+		if (elencoImpiegatiPresenti.size() < 1)
+			throw new RuntimeException("testFindAllByDataAssunzioneMaggioreDi : FAILED, non ci sono impiegati sul DB");
+
+		LocalDate dataDaRicercare = LocalDate.parse("2000-01-01");
+		List<Compagnia> listaCompagniaLikeExample = compagniaDAOInstance.findAllByDataAssunzioneMaggioreDi(dataDaRicercare);
+		if (listaCompagniaLikeExample.size() < 1) {
+			throw new RuntimeException("testFindAllByDataAssunzioneMaggioreDi : FAILED, non ci sono voci sul DB");
+		}
+		System.out.println(".......testFindAllByDataAssunzioneMaggioreDi fine: PASSED.............");
 	}
 	
 }
